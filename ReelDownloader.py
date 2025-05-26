@@ -163,8 +163,8 @@ def download_instagram_reels_sssinstagram(reel_url, temp_folder, videos_folder, 
         
         # Download the video manually using the extracted href link
         driver.get(video_download_link)
-        time.sleep(10)  # Give time for the download to start
-        
+        time.sleep(30)  # Give time for the download to start
+    
         # Rename the file after download
         rename_and_move_downloaded_file(temp_folder, videos_folder, counter_file, reel_url,links_file)
 
