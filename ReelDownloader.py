@@ -24,24 +24,22 @@ def setup_selenium(download_folder):
     chrome_options = Options()
     
     prefs = {
-        "download.default_directory": os.path.abspath(download_folder),  # Set the download folder
+        "download.default_directory": os.path.abspath(download_folder),
         "download.prompt_for_download": False,
         "download.directory_upgrade": True,
         "safebrowsing.enabled": True,
     }
     chrome_options.add_experimental_option("prefs", prefs)
-    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless=new")  # Use headless mode
     chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
-    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-    chrome_options.add_argument("--window-size=1920x1080")
-    chrome_options.add_argument("--ignore-certificate-errors")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    
-    # Set up Chrome driver
+    chrome_options.add_argument("--window-size=1920x1080")
+    chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+    chrome_options.binary_location = "/usr/bin/brave-browser"  # Path to Brave browser
+
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    print("driver = ",driver)
+    print("driver = ", driver)
     
     return driver
 
