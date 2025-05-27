@@ -26,11 +26,12 @@ jobs:
           sudo apt install -y wget gnupg2 software-properties-common
           pip install selenium webdriver-manager beautifulsoup4 pandas
   
-      - name: Install Brave Browser (bypass keyring issue)
+      - name: Install Brave Browser manually
         run: |
-          wget https://github.com/brave/brave-browser/releases/download/v1.65.126/brave-browser_1.65.126_amd64.deb
-          sudo dpkg -i brave-browser_1.65.126_amd64.deb || true
-          sudo apt-get install -f -y
+          curl -LO https://github.com/brave/brave-browser/releases/download/v1.65.126/brave-browser_1.65.126_amd64.deb
+          sudo apt install -y ./brave-browser_1.65.126_amd64.deb || true  # ignore keyring error
+          sudo cp /opt/brave.com/brave/brave /usr/bin/brave-browser
+
       
       - name: Debug Brave path
         run: |
