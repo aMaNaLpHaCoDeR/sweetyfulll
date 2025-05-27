@@ -36,7 +36,7 @@ def setup_selenium(download_folder):
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--window-size=1920x1080")
     chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-    chrome_options.binary_location = "/usr/bin/brave-browser"  # Path to Brave browser
+    chrome_options.binary_location = "/opt/brave.com/brave/brave"
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     print("driver = ", driver)
