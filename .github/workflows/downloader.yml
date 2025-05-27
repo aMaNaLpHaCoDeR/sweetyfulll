@@ -26,10 +26,11 @@ jobs:
           sudo apt install -y wget gnupg2 software-properties-common
           pip install selenium webdriver-manager beautifulsoup4 pandas
   
-      - name: Install Brave Browser
+      - name: Install Brave Browser (bypass keyring issue)
         run: |
           wget https://github.com/brave/brave-browser/releases/download/v1.65.126/brave-browser_1.65.126_amd64.deb
-          sudo apt install -y ./brave-browser_1.65.126_amd64.deb
+          sudo dpkg -i brave-browser_1.65.126_amd64.deb || true
+          sudo apt-get install -f -y
           
       - name: Run Selenium script
         run: |
