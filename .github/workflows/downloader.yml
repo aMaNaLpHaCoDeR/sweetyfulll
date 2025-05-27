@@ -31,7 +31,12 @@ jobs:
           wget https://github.com/brave/brave-browser/releases/download/v1.65.126/brave-browser_1.65.126_amd64.deb
           sudo dpkg -i brave-browser_1.65.126_amd64.deb || true
           sudo apt-get install -f -y
-          
+      
+      - name: Debug Brave path
+        run: |
+          which brave-browser || true
+          ls -l /usr/bin/ | grep brave || true
+ 
       - name: Run Selenium script
         run: |
           python ReelDownloader.py
