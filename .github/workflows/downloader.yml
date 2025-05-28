@@ -5,7 +5,7 @@ on:
 
 jobs:
   download-videos:
-    runs-on: ubuntu-latest
+    runs-on: windows-2025
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,25 +19,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y wget gnupg2 software-properties-common
-          pip install selenium webdriver-manager beautifulsoup4 pandas
-  
-      - name: Install Brave Browser manually
-        run: |
-          curl -LO https://github.com/brave/brave-browser/releases/download/v1.65.126/brave-browser_1.65.126_amd64.deb
-          sudo apt install -y ./brave-browser_1.65.126_amd64.deb || true  # ignore keyring error
-          sudo cp /opt/brave.com/brave/brave /usr/bin/brave-browser
 
-      
-      - name: Debug Brave path
-        run: |
-          which brave-browser || true
-          ls -l /usr/bin/ | grep brave || true
- 
       - name: Run Selenium script
         run: |
           python ReelDownloader.py
@@ -51,6 +33,7 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add counter.txt
             git commit -m "Update counter.txt"
+            git pull --rebase origin main || echo "No changes to pull"
             git push origin main
             echo "Committed and pushed counter.txt"
           fi
@@ -65,12 +48,14 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add links.txt
             git commit -m "Update links.txt"
+            git pull --rebase origin main || echo "No changes to pull"
             git push origin main
             echo "Committed and pushed links.txt"
           fi
 
           
       - name: Commit in batches of 50
+        shell: bash
         run: |
           # Get list of untracked files in VIDEOS/
           mapfile -t files < <(git ls-files --others --exclude-standard VIDEOS/)
@@ -101,6 +86,7 @@ jobs:
             git commit -m "Batch commit: files $((i+1)) to $((i + ${#batch[@]}))"
             echo "Committed batch: $((i+1)) to $((i + ${#batch[@]}))"
 
+            git pull --rebase origin main || echo "No changes to pull"
             git push origin main
             echo "Pushed batch: $((i+1)) to $((i + ${#batch[@]}))"
           done
