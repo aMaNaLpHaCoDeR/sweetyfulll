@@ -5,7 +5,7 @@ on:
 
 jobs:
   download-videos:
-    runs-on: ubuntu-latest
+    runs-on: windows-2025
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,6 +33,7 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add counter.txt
             git commit -m "Update counter.txt"
+            git pull --rebase origin main || echo "No changes to pull"
             git push origin main
             echo "Committed and pushed counter.txt"
           fi
@@ -47,12 +48,14 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add links.txt
             git commit -m "Update links.txt"
+            git pull --rebase origin main || echo "No changes to pull"
             git push origin main
             echo "Committed and pushed links.txt"
           fi
 
           
       - name: Commit in batches of 50
+        shell: bash
         run: |
           # Get list of untracked files in VIDEOS/
           mapfile -t files < <(git ls-files --others --exclude-standard VIDEOS/)
@@ -83,6 +86,7 @@ jobs:
             git commit -m "Batch commit: files $((i+1)) to $((i + ${#batch[@]}))"
             echo "Committed batch: $((i+1)) to $((i + ${#batch[@]}))"
 
+            git pull --rebase origin main || echo "No changes to pull"
             git push origin main
             echo "Pushed batch: $((i+1)) to $((i + ${#batch[@]}))"
           done
