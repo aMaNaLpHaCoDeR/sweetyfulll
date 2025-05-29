@@ -74,10 +74,10 @@ def get_counter_value(counter_file):
     print(f"[LOG] Getting counter value from file: {counter_file}")
     if not os.path.exists(counter_file):
         print(f"[LOG] Counter file does not exist. Creating new file with initial value 1.")
-        with open(counter_file, 'w') as f:
+        with open(counter_file, 'w', encoding='utf-8') as f:
             f.write('1')
         return 1
-    with open(counter_file, 'r') as f:
+    with open(counter_file, 'r', encoding='utf-8') as f:
         value = int(f.read().strip())
         print(f"[LOG] Current counter value: {value}")
         return value
@@ -86,7 +86,7 @@ def increment_counter(counter_file):
     print(f"[LOG] Incrementing counter value in file: {counter_file}")
     value = get_counter_value(counter_file) + 1
     print(f"[LOG] New counter value: {value}")
-    with open(counter_file, 'w') as f:
+    with open(counter_file, 'w', encoding='utf-8') as f:
         f.write(str(value))
     return value
 
@@ -118,7 +118,7 @@ def rename_and_move_downloaded_file(temp_folder, videos_folder, counter_file, re
             os.remove(renamed_path)
 
             # Update links.txt to mark the link as "LARGE FILE"
-            with open(links_file, 'r') as file:
+            with open(links_file, 'r', encoding='utf-8') as file:
                 lines = file.readlines()
 
             # Update the specific line in memory and write back once
@@ -126,7 +126,7 @@ def rename_and_move_downloaded_file(temp_folder, videos_folder, counter_file, re
                 line_index = lines.index(reel_url + '\n')
                 lines[line_index] = f"{reel_url} - LARGE FILE\n"
 
-            with open(links_file, 'w') as file:
+            with open(links_file, 'w', encoding='utf-8') as file:
                 file.writelines(lines)
         else:
             final_path = os.path.join(videos_folder, new_filename)
@@ -225,7 +225,7 @@ def main():
     links_file = "links.txt"
     
     # Read reel links from the .txt file
-    with open(links_file, 'r') as file:
+    with open(links_file, 'r', encoding='utf-8') as file:
         reel_links = [line.strip() for line in file.readlines()]
         for reel_link in reel_links:
             print(f"Downloading reel: {reel_link}")
