@@ -158,13 +158,6 @@ def download_instagram_reels_sssinstagram(reel_url, temp_folder, videos_folder, 
         )
         download_button.click()
         print("[LOG] Download button clicked. Waiting for video download link...")
-        # Wait for the "Download" button to appear and click it
-        # download_button = WebDriverWait(driver, 20).until(
-        #     EC.element_to_be_clickable((By.XPATH, "//a[@class='button button--filled button__download']"))
-        # )
-        # print("[LOG] Download button found. Clicking the button...")
-        # download_button.click()
-        # print("[LOG] Download initiated. Waiting for the download to complete...")
         # Wait for either of the "Download Video" buttons to appear and get the href
         download_video_button = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.XPATH, "//a[@class='button button--filled button__download']"))
