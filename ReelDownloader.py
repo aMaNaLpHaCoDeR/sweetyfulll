@@ -1,3 +1,8 @@
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -65,19 +70,19 @@ def get_next_serialized_filename(download_folder):
 # Function to check if the download is complete
 def is_download_complete(download_folder):
     print(f"[LOG] Checking if download is complete in folder: {download_folder}")
-    temp_files = [f for f in os.listdir(download_folder) if f.endswith('.mp4')]
+    temp_files = [entry.name for entry in os.scandir(download_folder) if entry.is_file() and entry.name.endswith('.mp4')]
     if temp_files:
-        print(f"[LOG] Non-MP4 files: {temp_files}")
+        print(f"[LOG] MP4 files: {temp_files}")
         return True
 
 def get_counter_value(counter_file):
     print(f"[LOG] Getting counter value from file: {counter_file}")
     if not os.path.exists(counter_file):
         print(f"[LOG] Counter file does not exist. Creating new file with initial value 1.")
-        with open(counter_file, 'w') as f:
+        with open(counter_file, 'w', encoding='utf-8') as f:
             f.write('1')
         return 1
-    with open(counter_file, 'r') as f:
+    with open(counter_file, 'r', encoding='utf-8') as f:
         value = int(f.read().strip())
         print(f"[LOG] Current counter value: {value}")
         return value
@@ -86,7 +91,7 @@ def increment_counter(counter_file):
     print(f"[LOG] Incrementing counter value in file: {counter_file}")
     value = get_counter_value(counter_file) + 1
     print(f"[LOG] New counter value: {value}")
-    with open(counter_file, 'w') as f:
+    with open(counter_file, 'w', encoding='utf-8') as f:
         f.write(str(value))
     return value
 
@@ -118,15 +123,14 @@ def rename_and_move_downloaded_file(temp_folder, videos_folder, counter_file, re
             os.remove(renamed_path)
 
             # Update links.txt to mark the link as "LARGE FILE"
-            with open(links_file, 'r') as file:
+            with open(links_file, 'r', encoding='utf-8') as file:
                 lines = file.readlines()
 
-            # Update the specific line in memory and write back once
-            if reel_url in lines:
-                line_index = lines.index(reel_url + '\n')
-                lines[line_index] = f"{reel_url} - LARGE FILE\n"
-
-            with open(links_file, 'w') as file:
+            # Update the specific line in memory and write back once (robust Unicode-safe matching)
+            for i, line in enumerate(lines):
+                if reel_url.strip() == line.strip():
+                    lines[i] = f"{reel_url} - LARGE FILE\n"
+            with open(links_file, 'w', encoding='utf-8') as file:
                 file.writelines(lines)
         else:
             final_path = os.path.join(videos_folder, new_filename)
@@ -158,27 +162,20 @@ def download_instagram_reels_sssinstagram(reel_url, temp_folder, videos_folder, 
         )
         download_button.click()
         print("[LOG] Download button clicked. Waiting for video download link...")
-        # Wait for the "Download" button to appear and click it
-        download_button = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[@class='button button--filled button__download']"))
-        )
-        print("[LOG] Download button found. Clicking the button...")
-        download_button.click()
-        print("[LOG] Download initiated. Waiting for the download to complete...")
         # Wait for either of the "Download Video" buttons to appear and get the href
-        # download_video_button = WebDriverWait(driver, 20).until(
-        #     EC.presence_of_element_located((By.XPATH, "//a[@class='button button--filled button__download']"))
-        # )
-        # print("[LOG] Download video button found. Extracting download link...")
+        download_video_button = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.XPATH, "//a[@class='button button--filled button__download']"))
+        )
+        print("[LOG] Download video button found. Extracting download link...")
 
         # Extract the href link for the video
-        # video_download_link = download_video_button.get_attribute("href")
-        # print(f"[LOG] Download link extracted: {video_download_link}")
+        video_download_link = download_video_button.get_attribute("href")
+        print(f"[LOG] Download link extracted: {video_download_link}")
         
         # Download the video manually using the extracted href link
         time.sleep(10)
         print("[LOG] Navigating to the video download link...")
-        # driver.get(video_download_link)
+        driver.get(video_download_link)
         print("[LOG] Waiting for the download to start...")
         time.sleep(10)  # Give time for the download to start
         
@@ -225,7 +222,7 @@ def main():
     links_file = "links.txt"
     
     # Read reel links from the .txt file
-    with open(links_file, 'r') as file:
+    with open(links_file, 'r', encoding='utf-8') as file:
         reel_links = [line.strip() for line in file.readlines()]
         for reel_link in reel_links:
             print(f"Downloading reel: {reel_link}")
