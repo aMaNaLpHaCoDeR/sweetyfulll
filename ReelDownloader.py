@@ -65,9 +65,9 @@ def get_next_serialized_filename(download_folder):
 # Function to check if the download is complete
 def is_download_complete(download_folder):
     print(f"[LOG] Checking if download is complete in folder: {download_folder}")
-    temp_files = [f for f in os.listdir(download_folder.encode('utf-8', errors='ignore').decode('utf-8')) if f.endswith('.mp4')]
+    temp_files = [entry.name for entry in os.scandir(download_folder) if entry.is_file() and entry.name.endswith('.mp4')]
     if temp_files:
-        print(f"[LOG] Non-MP4 files: {temp_files}")
+        print(f"[LOG] MP4 files: {temp_files}")
         return True
 
 def get_counter_value(counter_file):
