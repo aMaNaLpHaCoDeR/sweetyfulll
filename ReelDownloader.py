@@ -121,11 +121,10 @@ def rename_and_move_downloaded_file(temp_folder, videos_folder, counter_file, re
             with open(links_file, 'r', encoding='utf-8') as file:
                 lines = file.readlines()
 
-            # Update the specific line in memory and write back once
-            if reel_url in lines:
-                line_index = lines.index(reel_url + '\n')
-                lines[line_index] = f"{reel_url} - LARGE FILE\n"
-
+            # Update the specific line in memory and write back once (robust Unicode-safe matching)
+            for i, line in enumerate(lines):
+                if reel_url.strip() == line.strip():
+                    lines[i] = f"{reel_url} - LARGE FILE\n"
             with open(links_file, 'w', encoding='utf-8') as file:
                 file.writelines(lines)
         else:
