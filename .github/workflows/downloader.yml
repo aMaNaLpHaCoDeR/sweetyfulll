@@ -5,7 +5,7 @@ on:
 
 jobs:
   download-videos:
-    runs-on: ubuntu-latest
+    runs-on: windows-2025
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,33 +26,34 @@ jobs:
 
       - name: Commit counter.txt if changed
         run: |
-          if git diff --quiet counter.txt; then
-            echo "No changes to counter.txt"
-          else
+          if ((git diff --quiet counter.txt)) {
+            Write-Host "No changes to counter.txt"
+          } else {
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add counter.txt
             git commit -m "Update counter.txt"
+            git pull --rebase origin main || Write-Host "No changes to pull"
             git push origin main
-            echo "Committed and pushed counter.txt"
-          fi
-
+            Write-Host "Committed and pushed counter.txt"
+          }
 
       - name: Commit links.txt if changed
         run: |
-          if git diff --quiet links.txt; then
-            echo "No changes to links.txt"
-          else
+          if ((git diff --quiet links.txt)) {
+            Write-Host "No changes to links.txt"
+          } else {
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add links.txt
             git commit -m "Update links.txt"
+            git pull --rebase origin main || Write-Host "No changes to pull"
             git push origin main
-            echo "Committed and pushed links.txt"
-          fi
+            Write-Host "Committed and pushed links.txt"
+          }
 
-          
       - name: Commit in batches of 50
+        shell: bash
         run: |
           # Get list of untracked files in VIDEOS/
           mapfile -t files < <(git ls-files --others --exclude-standard VIDEOS/)
@@ -83,8 +84,8 @@ jobs:
             git commit -m "Batch commit: files $((i+1)) to $((i + ${#batch[@]}))"
             echo "Committed batch: $((i+1)) to $((i + ${#batch[@]}))"
 
+            git pull --rebase origin main || echo "No changes to pull"
             git push origin main
             echo "Pushed batch: $((i+1)) to $((i + ${#batch[@]}))"
           done
 
- 
